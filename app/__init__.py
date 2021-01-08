@@ -29,6 +29,10 @@ def create_app(config_env=''):  # funkcja faktory
     # default information if user want to get to page
     # _l do multilangue _l jest lazy
     login_manager.login_message_category = 'danger'
+    from app.main.views import bp_main
+    from app.auth.views import bp_auth
+    app.register_blueprint(bp_main)
+    app.register_blueprint(bp_auth, url_prefix='/auth')
 
     Migrate(app, db)
 

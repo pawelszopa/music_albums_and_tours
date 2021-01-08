@@ -1,2 +1,4 @@
 .idea
 *.pyc
+music.db
+migrations
