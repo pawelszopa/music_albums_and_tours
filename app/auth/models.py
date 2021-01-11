@@ -26,6 +26,8 @@ class User(db.Model, UserMixin):
     def is_album_owner(self, album):
         return self.id == album.user_id
 
+    def is_tour_owner(self, tour):
+        return self.id == tour.user_id
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -38,3 +40,5 @@ class User(db.Model, UserMixin):
 def load_user(user_id):
     return User.query.get(int(user_id))
 # ustawia current_user
+
+

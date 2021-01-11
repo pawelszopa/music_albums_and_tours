@@ -42,7 +42,7 @@
                 </a>
               </li>
               <li class="nav-item mb-2">
-                <a class="nav-link {{ 'active' if active_page == 'tours' }}" href="">
+                <a class="nav-link {{ 'active' if active_page == 'tours' }}" href="{{ url_for('tour.tours_list') }}">
                   {{ _('See tours') }}
                 </a>
               </li>
@@ -52,7 +52,7 @@
                 </a>
               </li>
               <li class="nav-item mb-2">
-                <a class="nav-link {{ 'active' if active_page == 'new_tour' }}" href="">
+                <a class="nav-link {{ 'active' if active_page == 'new_tour' }}" href="{{ url_for('tour.create') }}">
                   {{ _('Upload new tour') }}
                 </a>
               </li>
