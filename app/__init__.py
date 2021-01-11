@@ -32,6 +32,8 @@ def create_app(config_env=''):  # funkcja faktory
     from app.auth.views import bp_auth
     app.register_blueprint(bp_auth, url_prefix='/auth')
 
+
+
     with app.app_context():
         from app.album.views import bp_album
         app.register_blueprint(bp_album, url_prefix='/album')
@@ -39,6 +41,8 @@ def create_app(config_env=''):  # funkcja faktory
         app.register_blueprint(bp_main)
         from app.tour.views import bp_tour
         app.register_blueprint(bp_tour, url_prefix='/bp_tour')
+        from app.admin.views import bp_admin
+        app.register_blueprint(bp_admin, url_prefix='/admin')
 
     # aby używać app w form (notatnik page 15) context manager
 
