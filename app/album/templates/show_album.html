@@ -1,10 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'partials/_base.html' %}
 {% block headline %}Album "{{ album.title }}"{% endblock %}
 {% block content %}
 <div class="row">
   <div class="col-md-5">
     <div class="embed-responsive embed-responsive-1by1">
-       <img class="embed-responsive-item" style="object-fit: cover" src="{{ url_for('album.uploads', filename=album.image) }}" alt="">
+       <img class="embed-responsive-item" style="object-fit: cover; width:100%" src="{{ url_for('album.uploads', filename=album.image) }}" alt="">
      </div>
   </div>
   <div class="col-md-5">

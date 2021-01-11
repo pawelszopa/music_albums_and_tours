@@ -29,13 +29,18 @@ def create_app(config_env=''):  # funkcja faktory
     # _l do multilangue _l jest lazy
     login_manager.login_message_category = 'danger'
 
-    from app.main.views import bp_main
-    from app.auth.views import bp_auth
-    from app.album.views import bp_album
 
-    app.register_blueprint(bp_main)
+    from app.auth.views import bp_auth
     app.register_blueprint(bp_auth, url_prefix='/auth')
-    app.register_blueprint(bp_album, url_prefix='/album')
+
+    with app.app_context():
+        from app.album.views import bp_album
+        app.register_blueprint(bp_album, url_prefix='/album')
+        from app.main.views import bp_main
+        app.register_blueprint(bp_main)
+
+    # aby używać app w form (notatnik page 15)
+
     Migrate(app, db)
 
     return app

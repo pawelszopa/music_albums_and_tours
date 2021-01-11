@@ -1,10 +1,11 @@
+from flask import current_app
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileRequired
 from wtforms import StringField, TextAreaField, DateField, FileField, SubmitField
 from flask_babel import lazy_gettext as _l
 from wtforms.validators import InputRequired, DataRequired, Length
 
-from setup import app
+
 
 
 class AlbumForm(FlaskForm):
@@ -46,7 +47,7 @@ class CreateAlbumForm(AlbumForm):
                              )
     image = FileField(_l("Album cover"),
                       validators=[
-                          FileAllowed(app.config["ALLOWED_IMAGE_EXTENSIONS"], "Images only!"),
+                          FileAllowed(current_app.config["ALLOWED_IMAGE_EXTENSIONS"], "Images only!"),
                           FileRequired()
                       ])
     submit = SubmitField(_l("Upload album"))

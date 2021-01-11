@@ -7,7 +7,7 @@ class Config:
     SECRET_KEY = os.environ.get(
         'FLASK_SECRET_KEY') or 'top_secret'  # b to bite string - czesc baz danych nie obsluguje bite string b'321/dsa/2'
     # os.environ.get pobiera ze zmiennej srodowiskowej secret key jesli nie mamy to jest
-    ALLOWED_IMAGE_EXTENSIONS = ['.jpg', 'jpeg', 'png']  # troche jak validator do obrazkow
+    ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png']  # troche jak validator do obrazkow
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # ograniczenie wielkości (kb/mb) obrazków w mb
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # wylaczanie warningow z sql alchemy
 

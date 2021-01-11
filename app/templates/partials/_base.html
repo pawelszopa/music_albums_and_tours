@@ -37,7 +37,7 @@
               </li>
               {% else %}
               <li class="nav-item">
-                <a class="nav-link {{ 'active' if active_page == 'albums' }}" href="">
+                <a class="nav-link {{ 'active' if active_page == 'albums' }}" href="{{ url_for('album.albums_list') }}">
                   {{ _('See albums') }}
                 </a>
               </li>
@@ -47,7 +47,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link {{ 'active' if active_page == 'new_album' }}" href="">
+                <a class="nav-link {{ 'active' if active_page == 'new_album' }}" href="{{ url_for('album.create') }}">
                   {{ _('Upload new album') }}
                 </a>
               </li>
