@@ -1,7 +1,8 @@
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app import db, login_manager
+
+from ..extensions import login_manager, db
 
 
 class User(db.Model, UserMixin):
@@ -12,6 +13,10 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(64), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean(), default=False)
+    albums = db.relationship('Album', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+    tours = db.relationship('Tour', backref='user', lazy='dynamic', cascade='all, delete-orphan')
+
+    # cascade co ma się stać jak ususnie cie usera - all wszystkie orphant dzieci albumów
 
     def __init__(self, username='', email='', password=''):
         self.username = username
@@ -35,8 +40,6 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f'<User {self.username}>'
-
-
 
     # __str__ dla użytjowników
     # repr zwraca reprezentacje obiektu

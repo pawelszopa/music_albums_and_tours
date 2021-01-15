@@ -2,7 +2,7 @@ from flask import Blueprint, url_for, flash, render_template, request
 from flask_login import current_user, login_user, logout_user
 from werkzeug.utils import redirect
 from flask_babel import _
-from app import db
+from app.extensions import db
 from app.auth.forms import RegistrationForm, LoginForm
 from app.auth.models import User
 

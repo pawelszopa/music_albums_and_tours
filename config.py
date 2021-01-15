@@ -10,6 +10,8 @@ class Config:
     ALLOWED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png']  # troche jak validator do obrazkow
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # ograniczenie wielkości (kb/mb) obrazków w mb
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # wylaczanie warningow z sql alchemy
+    LANGUAGES = ['en', 'hr']
+    ADMIN_VIEWS = []
 
 
 class ProductionConfig(Config):

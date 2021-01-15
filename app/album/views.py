@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, flash, url_for, send_from_director
 from flask_login import login_required, current_user
 from werkzeug.utils import redirect
 
-from app import db
+from app.extensions import db
 from app.album.forms import CreateAlbumForm, UpdateAlbumForm
 from app.album.models import Album
 from app.helpers.utilities import save_image_upload

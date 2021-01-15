@@ -1,6 +1,11 @@
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template, url_for
+from werkzeug.utils import redirect
 
 bp_main = Blueprint('main', __name__, template_folder='templates')
+
+
+def root():
+    return redirect(url_for('main.index'))
 
 
 @bp_main.route('/')
@@ -8,6 +13,3 @@ def index():
     return render_template('index.html')
 
 #  date_format w  template jinja (przekazanie do jinja tej funkcji)
-@current_app.template_filter('date_format')
-def date_format(value, format='%m/%d/%Y'):
-    return value.strftime(format)

@@ -5,7 +5,7 @@ from flask.views import View, MethodView
 from flask_login import login_required, current_user
 from werkzeug.utils import redirect
 
-from app import db
+from app.extensions import db
 from app.album.forms import UpdateAlbumForm
 from app.album.models import Album
 from app.auth.models import User
@@ -35,33 +35,19 @@ def admin_required(fn):
 class TableView(View):
     decorators = [admin_required, login_required]
 
-    # kolejność od dolu do gory dlatego taka kolejnosc bo inaczej wyala jak nie zalogowany
-
-    def __init__(self, model, edit_allowed=False):
-        self.edit_allowed = edit_allowed
+    def __init__(self, model, edit_allowed=True):
         self.model = model
         self.columns = self.model.__mapper__.columns.keys()
         self.resource_name = self.model.__name__.lower()
-        super(TableView, self).__init__()  # wywola dunder init od views
+        self.edit_allowed = edit_allowed
+        super(TableView, self).__init__()
 
-    # model konkretny model np albumy/tour  przekazujemy jako parametr
-    # mamy dostep do bazy danych z poziomuy tego modelu
-    # pole statyczne w klasie które są dostepne z poziomu i obiektu i klasy
-    # pola statyczne tworzą nam kolumny w db
-    # sql alchemy  pobiera kolumny dlatego mozemy do columns przypisać
-    # instances to wszystkie wystąpienia danego modelu - czyli np albus to chcemy all albums
-    # __name__ trzyma nazwe clasy
-    def dispatch_request(self):  # wywoływane na gdy wejdziemy endpointa
+    def dispatch_request(self):
         return render_template('resource_table.html', columns=self.columns, instances=self.model.query.all(),
-                               edit_allowed=True, resource_name=self.resource_name)
+                               edit_allowed=self.edit_allowed, resource_name=self.resource_name)
 
 
-# żeby podpiąć klasę czy funkcję trzeba ją zarejestrować
-# add url rule to dekorator bp.route()
-
-bp_admin.add_url_rule('/tours', view_func=TableView.as_view('tour', model=Tour))
-bp_admin.add_url_rule('/users', view_func=TableView.as_view('user', model=User))
-
+# instances sciąga z bazy danych - jakbyśmy chcieli aby wyświetlał się użytkownik to tutaj trzeba modyfikować
 
 # class args i kwargs to przekazujemy model to jest w funkcji asview
 
@@ -72,24 +58,25 @@ class ModifyResourceView(MethodView):
         self.model = model
         self.columns = self.model.__mapper__.columns.keys()
         self.edit_form = edit_form
+        self.form = edit_form()
         self.resource_name = self.model.__name__.lower()
         super(MethodView, self).__init__()
 
-    def get(self, resources_id):
-        form = self.edit_form()
+    def get(self, resource_id):
+        form = self.form
         parameters = self.get_update_parameters(form)
-        model_instance = self.get_model_instance(resources_id)
+        model_instance = self.get_model_instance(resource_id)
 
         # wyciągamy dane do resurce edit. Ona sciagnie pola z obiektu i bedzie mozna edytowac kazdy resopurece
         for parameter in parameters:
             form_attr = getattr(form, parameter)
             form_attr.data = getattr(model_instance, parameter)
 
-        return render_template('resource_edit.html', resources_name=self.resource_name, model_instance=model_instance,
-                               form=form, parameters=parameters)
+        return render_template('resource_edit.html', resource_name=self.resource_name, model_instance=model_instance,
+                               form=form)
 
     def post(self, resource_id):
-        form = self.edit_form()
+        form = self.form
         parameters = self.get_update_parameters(form)
         model_instance = self.get_model_instance(resource_id)
         if form.validate_on_submit():
@@ -110,12 +97,30 @@ class ModifyResourceView(MethodView):
     def get_model_instance(self, resource_id):
         return self.model.query.filter_by(id=resource_id).first()
 
-    def get_update_parameters(self, form_instance):
+    @staticmethod
+    def get_update_parameters(form_instance):
         parameter_list = list(form_instance.__dict__.keys())
         parameter_list = [parameter for parameter in parameter_list if
                           parameter[0] != '_' and parameter not in ['submit', 'csrf_token', 'meta']]
         return parameter_list
         # __dict__ wyciaga wszystkie pola zbiór kolekcja wszystkich pól
 
-bp_admin.add_url_rule('/albums', view_func=TableView.as_view('album', model=Album))
-bp_admin.add_url_rule('/albums/<int:resources_id>', view_func=ModifyResourceView.as_view('album_edit', model=Album, edit_form=UpdateAlbumForm))
+
+def register_admin_resource(model, edit_form=None):
+    resource_name = model.__name__.lower()
+    view_func = ModifyResourceView.as_view(resource_name, model=model, edit_form=edit_form)
+    edit_allowed = True
+    view_methods = ['GET', 'POST', 'DELETE']
+
+    if edit_form is None:
+        edit_allowed = False
+        view_methods = ['DELETE']
+
+    bp_admin.add_url_rule(f'/{resource_name}/',
+                          view_func=TableView.as_view(f'{resource_name}_table', model=model, edit_allowed=edit_allowed))
+    bp_admin.add_url_rule(f'/{resource_name}/<int:resource_id>', view_func=view_func, methods=view_methods)
+
+
+register_admin_resource(Album, UpdateAlbumForm)
+register_admin_resource(Tour, UpdateAlbumForm)
+register_admin_resource(User)

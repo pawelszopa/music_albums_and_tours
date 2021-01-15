@@ -1,51 +1,69 @@
+import os
+import re
+
 from flask import Flask
-from flask_babel import Babel, lazy_gettext as _l
-from flask_login import LoginManager
+
 from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
-babel = Babel()
-login_manager = LoginManager()
+from app.extensions import init_extensions, db
+
+app_env = os.environ.get('FLASK_ENV')
 
 
-def create_app(config_env=''):  # funkcja faktory
+# w app.env jest zmienna srodowiskowa zapisana, wiec  jak ustawimy FLASK_ENV to tutaj sie wpisze
+def create_app(config_env=app_env):  # funkcja faktory
     app = Flask(__name__)
-
-    if not config_env:
-        config_env = app.env
-        # w app.env jest zmienna srodowiskowa zapisana, wiec  jak ustawimy FLASK_ENV to tutaj sie wpisze
 
     app.config.from_object(f'config.{config_env.capitalize()}Config')  # liczone od source roota wiec lczy od music
     #  jakby source root byl na app to trzeba dodać .. config
-    db.init_app(app)
-    babel.init_app(app)
-    login_manager.init_app(app)
 
-    login_manager.session_protection = 'strong'
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message = _l('You need to be logged in to access this page.')
-    # default information if user want to get to page
-    # _l do multilangue _l jest lazy
-    login_manager.login_message_category = 'danger'
+    init_extensions(app)
+    lang_list = ','.join(app.config['LANGUAGES'])
+    lang_prefix = f'<any({lang_list}):lang>'
+    # any do obslugi jezyka z lang_list towrzenie zmiennej z wartosciami podanymi z listy
 
-    from app.auth.views import bp_auth
-    app.register_blueprint(bp_auth, url_prefix='/auth')
+    from app.main.views import root
+    app.add_url_rule('/', view_func=root)
 
-
+    # rootujemy tak że main index 5000 robi redirect na 5000/langue
 
     with app.app_context():
         from app.album.views import bp_album
-        app.register_blueprint(bp_album, url_prefix='/album')
-        from app.main.views import bp_main
-        app.register_blueprint(bp_main)
-        from app.tour.views import bp_tour
-        app.register_blueprint(bp_tour, url_prefix='/bp_tour')
-        from app.admin.views import bp_admin
-        app.register_blueprint(bp_admin, url_prefix='/admin')
+        app.register_blueprint(bp_album, url_prefix=f'/{lang_prefix}/album')
+
+    from app.main.views import bp_main
+    app.register_blueprint(bp_main, url_prefix=f'/{lang_prefix}/')
+
+    from app.tour.views import bp_tour
+    app.register_blueprint(bp_tour, url_prefix=f'/{lang_prefix}/bp_tour')
+
+    from app.auth.views import bp_auth
+    app.register_blueprint(bp_auth, url_prefix=f'/{lang_prefix}/auth')
+
+    from app.admin.views import bp_admin
+    app.register_blueprint(bp_admin, url_prefix=f'/{lang_prefix}/admin')
 
     # aby używać app w form (notatnik page 15) context manager
+    from app.filters import date_format
+    app.add_template_filter(date_format)
+
+    # TODO add other http error codes 403 500 etc
+    from app.errors import page_not_found
+    app.register_error_handler(404, page_not_found)
+
+    from app.url_processors import bp_url_processors
+    app.register_blueprint(bp_url_processors)
+
+    # admin views nie moga byc w config bo admin views budowane jest z bazy danych
+    # view functions zwraca wszystkie views jako slownik
+
+    app.config['ADMIN_VIEWS'] = [re.search('admin.(.*)_table', view).group(1) for view in list(app.view_functions.keys()) if
+                                 re.search('admin.(.*)_table', view)]
+
+    print(app.config['ADMIN_VIEWS'])
 
     Migrate(app, db)
+
+    # url_processors - żadko używne pozwala przetwarzać url hurtowo
 
     return app

@@ -3,7 +3,7 @@ from secrets import token_urlsafe
 from slugify import slugify
 from sqlalchemy import event
 
-from app import db
+from app.extensions import db
 
 
 class Album(db.Model):
