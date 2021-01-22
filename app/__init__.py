@@ -14,6 +14,8 @@ app_env = os.environ.get('FLASK_ENV')
 def create_app(config_env=app_env):  # funkcja faktory
     app = Flask(__name__)
 
+    if not config_env :
+        config_env = 'development'
     app.config.from_object(f'config.{config_env.capitalize()}Config')  # liczone od source roota wiec lczy od music
     #  jakby source root byl na app to trzeba dodać .. config
 
