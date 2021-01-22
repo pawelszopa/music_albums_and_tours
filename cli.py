@@ -4,6 +4,9 @@ import click
 from flask import current_app
 from flask.cli import with_appcontext
 
+from app import db
+from app.auth.models import User
+
 
 @click.command('list_bp_endpoints')
 @click.argument('blueprint')
@@ -14,11 +17,44 @@ def list_bp_endpoints(blueprint):
             click.echo(endpoint)
 
 
+@click.group('user')
+def user():
+    pass
+
+
+# TODO add some commands
+@user.command('create')  # to add to group this command is name_of_group.command()
+@click.option('-u', '--username', prompt='Username', help='User username', required=True)
+@click.option('-e', '--email', prompt='Email', help='User email', required=True)
+@click.option('-p', '--password', prompt='Password', help='User password', required=True, hide_input=True,
+              default='password123')
+@click.option('-a', '--admin', prompt='Is this user an admin', help='It turns the new user into an admin', is_flag=True)
+@with_appcontext
+def create(username, email, password, admin):
+    user = User.query.filter_by(username=username).first()
+    if user:
+        click.echo('User already exist with that username, please choose other username')
+        return
+    user = User.query.filter_by(email=email).first()
+    if user:
+        click.echo("User with that email already exist, please choose other email")
+        return
+
+    user = User(username, email, password)
+    if admin:
+        user.make_admin()
+
+    try:
+        db.session.add(user)
+        db.session.commit()
+        click.echo(f'User {user.username} has been successfully created')
+    except Exception as e:
+        click.echo('Something went wrong')
+        click.echo(e)
+        db.session.rollback()
+        #  user didn't fully added to db. rollback return this.
+
+
 def register_click_commands(app):
     app.cli.add_command(list_bp_endpoints)
-
-
-'''
-app.config['ADMIN_VIEWS'] = [re.search('admin.(.*)_table', view).group(1) for view in list(app.view_functions.keys()) if
-                                 re.search('admin.(.*)_table', view)]
-'''
+    app.cli.add_command(user)

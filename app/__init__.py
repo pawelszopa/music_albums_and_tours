@@ -7,7 +7,6 @@ from flask_migrate import Migrate
 
 from app.extensions import init_extensions, db
 
-
 app_env = os.environ.get('FLASK_ENV')
 
 
@@ -48,7 +47,6 @@ def create_app(config_env=app_env):  # funkcja faktory
     from app.filters import date_format
     app.add_template_filter(date_format)
 
-
     from app.errors import page_not_found
     app.register_error_handler(404, page_not_found)
 
@@ -64,10 +62,9 @@ def create_app(config_env=app_env):  # funkcja faktory
     # admin views nie moga byc w config bo admin views budowane jest z bazy danych
     # view functions zwraca wszystkie views jako slownik
 
-    app.config['ADMIN_VIEWS'] = [re.search('admin.(.*)_table', view).group(1) for view in list(app.view_functions.keys()) if
+    app.config['ADMIN_VIEWS'] = [re.search('admin.(.*)_table', view).group(1) for view in
+                                 list(app.view_functions.keys()) if
                                  re.search('admin.(.*)_table', view)]
-
-    print(app.config['ADMIN_VIEWS'])
 
     Migrate(app, db)
 
