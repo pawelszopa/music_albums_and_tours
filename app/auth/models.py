@@ -2,7 +2,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-from ..extensions import login_manager, db
+from ..extensions import login_manager, db, cache
 
 
 class User(db.Model, UserMixin):
@@ -29,6 +29,7 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    @cache.memoize(timeout=180)  #  sprawdza parametry jesli sie nie zmieni zwroci poprzednie wywolanie
     def is_album_owner(self, album):
         return self.id == album.user_id
 

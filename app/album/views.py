@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, flash, url_for, send_from_directory, current_app
 from flask_login import login_required, current_user
+from sqlalchemy.orm import joinedload
 from werkzeug.utils import redirect
 
-from app.extensions import db
+from app.extensions import db, cache
 from app.album.forms import CreateAlbumForm, UpdateAlbumForm
 from app.album.models import Album
 from app.helpers.utilities import save_image_upload
@@ -12,10 +13,16 @@ from flask import abort
 bp_album = Blueprint('album', __name__, template_folder='templates')
 
 
+@cache.cached(timeout=60, key_prefix='list_of_albums')
+def get_albums():
+    print('Getting albums from db.')
+    return Album.query.options(joinedload(Album.user)).all()
+    # joinedload wymuszenie aby model zalezny od tego modelu zostal dociaganiety
+
 @bp_album.route('/')
 @login_required
 def albums_list():
-    albums = Album.query.all()
+    albums = get_albums()
     return render_template('list_albums.html', albums=albums)
 
 

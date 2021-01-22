@@ -12,6 +12,10 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False  # wylaczanie warningow z sql alchemy
     LANGUAGES = ['en', 'hr']
     ADMIN_VIEWS = []
+    CACHE_TYPE = 'redis'
+    CACHE_REDIS_HOST = '127.0.0.1'
+    CACHE_REDIS_PORT = "6379"  # default port dla redisa
+    CACHE_REDIS_DB = '0' # pierwsza instancja (bo redis moze dzialac jako rozproszona db)
 
 
 class ProductionConfig(Config):
