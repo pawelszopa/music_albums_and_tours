@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 
 from app.extensions import init_extensions, db
 
+
 app_env = os.environ.get('FLASK_ENV')
 
 
@@ -47,9 +48,15 @@ def create_app(config_env=app_env):  # funkcja faktory
     from app.filters import date_format
     app.add_template_filter(date_format)
 
-    # TODO add other http error codes 403 500 etc
+
     from app.errors import page_not_found
     app.register_error_handler(404, page_not_found)
+
+    from app.errors import forbidden
+    app.register_error_handler(403, forbidden)
+
+    from app.errors import server_error
+    app.register_error_handler(500, server_error)
 
     from app.url_processors import bp_url_processors
     app.register_blueprint(bp_url_processors)
@@ -63,6 +70,9 @@ def create_app(config_env=app_env):  # funkcja faktory
     print(app.config['ADMIN_VIEWS'])
 
     Migrate(app, db)
+
+    from cli import register_click_commands
+    register_click_commands(app)
 
     # url_processors - żadko używne pozwala przetwarzać url hurtowo
 
