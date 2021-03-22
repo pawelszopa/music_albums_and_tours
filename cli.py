@@ -10,7 +10,7 @@ from app.auth.models import User
 
 @click.command('list_bp_endpoints')
 @click.argument('blueprint')
-@with_appcontext  # zapewnia dostep do stosu aplikacji
+@with_appcontext
 def list_bp_endpoints(blueprint):
     for endpoint in current_app.view_functions.keys():
         if re.search(f'^{blueprint}.', endpoint):
@@ -22,8 +22,7 @@ def user():
     pass
 
 
-# TODO add some commands
-@user.command('create')  # to add to group this command is name_of_group.command()
+@user.command('create')
 @click.option('-u', '--username', prompt='Username', help='User username', required=True)
 @click.option('-e', '--email', prompt='Email', help='User email', required=True)
 @click.option('-p', '--password', prompt='Password', help='User password', required=True, hide_input=True,
@@ -52,7 +51,6 @@ def create(username, email, password, admin):
         click.echo('Something went wrong')
         click.echo(e)
         db.session.rollback()
-        #  user didn't fully added to db. rollback return this.
 
 
 def register_click_commands(app):

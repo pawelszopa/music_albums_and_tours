@@ -16,8 +16,6 @@ def init_extensions(app):
     login_manager.session_protection = 'strong'
     login_manager.login_view = 'auth.login'
     login_manager.login_message = _l('You need to be logged in to access this page.')
-    # default information if user want to get to page
-    # _l do multilangue _l jest lazy
     login_manager.login_message_category = 'danger'
 
 

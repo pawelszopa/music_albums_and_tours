@@ -30,7 +30,7 @@ def create():
             form.artist.data,
             form.description.data,
             form.genre.data,
-            save_image_upload(form.image),  # uwaga! podajemy caly obiekt a nie data!!
+            save_image_upload(form.image),
             form.release_date.data,
             current_user.id
         )
@@ -91,7 +91,6 @@ def edit(slug):
     return render_template("edit_album.html", album=album, form=form)
 
 
-# Route for deleting an album
 @bp_album.route("/delete/<slug>", methods=["POST"])
 @login_required
 def delete(slug):

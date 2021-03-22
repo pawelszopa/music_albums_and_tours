@@ -15,9 +15,6 @@ from flask_babel import _
 bp_admin = Blueprint('admin', __name__, template_folder='templates')
 
 
-# zewnetrzny przyjmuje funkcje wewnetrzny atrybuty tej funkcji
-# wraps powoduje ze wszystko bedzie wykolane w odpowiedniej kolejnosci
-# zamienia kolejnosc wywoływania funkcji
 def admin_required(fn):
     @wraps(fn)
     def _admin_required(*args, **kwargs):
@@ -28,9 +25,6 @@ def admin_required(fn):
 
     return _admin_required
 
-
-# istnieją klasy zamiast funkcji
-# sa 2 rodzaje get post osobno tutaj robimy razem
 
 class TableView(View):
     decorators = [admin_required, login_required]
@@ -46,10 +40,6 @@ class TableView(View):
         return render_template('resource_table.html', columns=self.columns, instances=self.model.query.all(),
                                edit_allowed=self.edit_allowed, resource_name=self.resource_name)
 
-
-# instances sciąga z bazy danych - jakbyśmy chcieli aby wyświetlał się użytkownik to tutaj trzeba modyfikować
-
-# class args i kwargs to przekazujemy model to jest w funkcji asview
 
 class ModifyResourceView(MethodView):
     decorators = [admin_required, login_required]
@@ -67,7 +57,6 @@ class ModifyResourceView(MethodView):
         parameters = self.get_update_parameters(form)
         model_instance = self.get_model_instance(resource_id)
 
-        # wyciągamy dane do resurce edit. Ona sciagnie pola z obiektu i bedzie mozna edytowac kazdy resopurece
         for parameter in parameters:
             form_attr = getattr(form, parameter)
             form_attr.data = getattr(model_instance, parameter)
@@ -103,7 +92,6 @@ class ModifyResourceView(MethodView):
         parameter_list = [parameter for parameter in parameter_list if
                           parameter[0] != '_' and parameter not in ['submit', 'csrf_token', 'meta']]
         return parameter_list
-        # __dict__ wyciaga wszystkie pola zbiór kolekcja wszystkich pól
 
 
 def register_admin_resource(model, edit_form=None):

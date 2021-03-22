@@ -33,9 +33,6 @@ def update_slag(target, value, old_value, initiator):
     print(target, value, old_value, initiator)
 
     target.slug = slugify(value) + '-' + token_urlsafe(3)
-    # pip install python-slugify
-    # funkcja do tworzenia bezpiecznego url
 
 
 event.listen(Album.title, "set", update_slag)
-# sql alchemy slucha (event), czeka na album title, robi set (ustawić cos)

@@ -22,12 +22,12 @@
               {% if current_user.is_anonymous %}
               <li class="nav-item">
                 <a class="nav-link {{ 'active' if active_page == 'home' }}" href="{{ url_for('main.index') }}">
-                  {{ _('Homedsdasadadad') }}
+                  {{ _('Home') }}
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link {{ 'active' if active_page == 'login' }}" href="{{ url_for('auth.login') }}">
-                  {{ _('Logindsada') }}
+                  {{ _('Login') }}
                 </a>
               </li>
               <li class="nav-item">

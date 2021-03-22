@@ -11,5 +11,3 @@ def root():
 @bp_main.route('/')
 def index():
     return render_template('index.html')
-
-#  date_format w  template jinja (przekazanie do jinja tej funkcji)

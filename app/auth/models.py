@@ -16,8 +16,6 @@ class User(db.Model, UserMixin):
     albums = db.relationship('Album', backref='user', lazy='dynamic', cascade='all, delete-orphan')
     tours = db.relationship('Tour', backref='user', lazy='dynamic', cascade='all, delete-orphan')
 
-    # cascade co ma się stać jak ususnie cie usera - all wszystkie orphant dzieci albumów
-
     def __init__(self, username='', email='', password=''):
         self.username = username
         self.email = email
@@ -41,11 +39,7 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f'<User {self.username}>'
 
-    # __str__ dla użytjowników
-    # repr zwraca reprezentacje obiektu
-
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-# ustawia current_user

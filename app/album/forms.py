@@ -6,8 +6,6 @@ from flask_babel import lazy_gettext as _l
 from wtforms.validators import InputRequired, DataRequired, Length
 
 
-
-
 class AlbumForm(FlaskForm):
     title = StringField(_l("Title"),
                         validators=[
@@ -36,7 +34,6 @@ class AlbumForm(FlaskForm):
                         ])
 
 
-# Form for creating albums
 class CreateAlbumForm(AlbumForm):
     release_date = DateField(_l("Release date"),
                              validators=[
@@ -53,6 +50,5 @@ class CreateAlbumForm(AlbumForm):
     submit = SubmitField(_l("Upload album"))
 
 
-# Form for updating albums
 class UpdateAlbumForm(AlbumForm):
     submit = SubmitField(_l("Update album information"))

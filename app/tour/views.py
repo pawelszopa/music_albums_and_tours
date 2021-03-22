@@ -15,7 +15,6 @@ from app.tour.models import Tour
 bp_tour = Blueprint("tour", __name__, template_folder="templates")
 
 
-# Route for listing tours
 @bp_tour.route("/")
 @login_required
 def tours_list():
@@ -23,7 +22,6 @@ def tours_list():
     return render_template("list_tours.html", tours=tours)
 
 
-# Route for creating new tours
 @bp_tour.route("/create", methods=["GET", "POST"])
 @login_required
 def create():
@@ -46,7 +44,6 @@ def create():
     return render_template("create_tour.html", form=form)
 
 
-# Route for updating a bp_tour
 @bp_tour.route("/edit/<slug>", methods=["GET", "POST"])
 @login_required
 def edit(slug):
@@ -87,7 +84,6 @@ def edit(slug):
     return render_template("edit_tour.html", tour=tour, form=form)
 
 
-# Route for deleting a bp_tour
 @bp_tour.route("/delete/<slug>", methods=["POST"])
 @login_required
 def delete(slug):
@@ -101,7 +97,6 @@ def delete(slug):
     return redirect(url_for("main.index"))
 
 
-# Route for showing a bp_tour
 @bp_tour.route("/show/<slug>")
 @login_required
 def show(slug):

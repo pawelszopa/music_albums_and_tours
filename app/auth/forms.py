@@ -32,7 +32,6 @@ class RegistrationForm(FlaskForm):
     ])
     submit = SubmitField(_l('Register'))
 
-    # * pole wymagane
 
     @staticmethod
     def validate_username(form, field):
